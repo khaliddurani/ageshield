@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "plans": "Plans"
+  },
+  "common": {
+    "loading": "Loading",
+    "retry": "Try again",
+    "save": "Save",
+    "discard": "Discard",
+    "saved": "Saved",
+    "errorHeading": "Something went wrong",
+    "errorBody": "Check your connection and try again.",
+    "notFoundHeading": "Page not found",
+    "notFoundBody": "This page doesn't exist.",
+    "goHome": "Go to Dashboard"
+  },
+  "dashboard": {
+    "heading": "Dashboard"
+  },
+  "theme": {
+    "heading": "Age gate on your storefront",
+    "loadError": "Your theme couldn't be checked",
+    "liveTheme": "Live theme: {theme}",
+    "ageGate": "Age gate app embed",
+    "enabled": "Enabled",
+    "notEnabled": "Not enabled",
+    "enabledBody": "Age-restricted products ask shoppers to verify their age before they can buy.",
+    "notEnabledBody": "Turn on the Age gate in your theme's App embeds and save the theme. Until then shoppers can buy age-restricted products without verifying their age.",
+    "enable": "Enable in theme editor",
+    "recheck": "Check again"
+  },
+  "plans": {
+    "heading": "Plans",
+    "nameFree": "Free",
+    "nameStarter": "Starter",
+    "namePro": "Pro",
+    "changePlan": "Change plan",
+    "comparePlans": "Compare plans",
+    "openFailed": "The plan page couldn't be opened. Try again.",
+    "currentHeading": "Your plan",
+    "trialBadge": "Free trial",
+    "trialEnds": "Free trial ends {date}.",
+    "periodEnds": "Current billing period ends {date}.",
+    "changeHelp": "Upgrade or downgrade anytime on Shopify's plan page. Charges appear on your Shopify bill.",
+    "syncFailed": "Shopify couldn't be reached, so this shows your plan as of {date}. Open this page again later.",
+    "compareHeading": "Plans",
+    "currentBadge": "Current plan",
+    "priceFree": "No charge",
+    "pricePerMonth": "{price} per month",
+    "downgradeNote": "If you downgrade, your settings, rules and verification history stay.",
+    "includedIn": "Included in {plan}.",
+    "monthlyResets": "The monthly count starts again on the 1st of next month.",
+    "limitMonthlyVerificationsHeading": "Your plan includes {limit} verifications per month",
+    "limitMonthlyVerificationsBody": "Shoppers have completed {used, plural, one {# verification} other {# verifications}} this month."
+  },
+  "planFeatures": {
+    "verifications50": "50 age verifications per month",
+    "verifications1000": "1,000 age verifications per month",
+    "verifications5000": "5,000 age verifications per month",
+    "allCountries": "MitID, BankID (SE/NO) and Finnish Trust Network",
+    "prioritySupport": "Priority support",
+    "trial7": "7-day free trial"
+  }
+}

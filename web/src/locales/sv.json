@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "dashboard": "Översikt",
+    "plans": "Planer"
+  },
+  "common": {
+    "loading": "Laddar",
+    "retry": "Försök igen",
+    "save": "Spara",
+    "discard": "Ignorera ändringar",
+    "saved": "Sparat",
+    "errorHeading": "Något gick fel",
+    "errorBody": "Kontrollera anslutningen och försök igen.",
+    "notFoundHeading": "Sidan hittades inte",
+    "notFoundBody": "Den här sidan finns inte.",
+    "goHome": "Till översikten"
+  },
+  "dashboard": {
+    "heading": "Översikt"
+  },
+  "theme": {
+    "heading": "Ålderskontroll i din butik",
+    "loadError": "Ditt tema kunde inte kontrolleras",
+    "liveTheme": "Publicerat tema: {theme}",
+    "ageGate": "Appinbäddningen Ålderskontroll",
+    "enabled": "Aktiverad",
+    "notEnabled": "Inte aktiverad",
+    "enabledBody": "Åldersbegränsade produkter ber kunderna att verifiera sin ålder innan de kan köpa.",
+    "notEnabledBody": "Aktivera Ålderskontroll under Appinbäddningar i ditt tema och spara temat. Fram till dess kan kunderna köpa åldersbegränsade produkter utan att verifiera sin ålder.",
+    "enable": "Aktivera i temaredigeraren",
+    "recheck": "Kontrollera igen"
+  },
+  "plans": {
+    "heading": "Planer",
+    "nameFree": "Free",
+    "nameStarter": "Starter",
+    "namePro": "Pro",
+    "changePlan": "Byt plan",
+    "comparePlans": "Jämför planer",
+    "openFailed": "Plansidan kunde inte öppnas. Försök igen.",
+    "currentHeading": "Din plan",
+    "trialBadge": "Gratis provperiod",
+    "trialEnds": "Den gratis provperioden slutar {date}.",
+    "periodEnds": "Den aktuella faktureringsperioden slutar {date}.",
+    "changeHelp": "Uppgradera eller nedgradera när som helst på Shopifys plansida. Avgifterna visas på din Shopify-faktura.",
+    "syncFailed": "Shopify gick inte att nå, så detta visar din plan per {date}. Öppna sidan igen senare.",
+    "compareHeading": "Planer",
+    "currentBadge": "Nuvarande plan",
+    "priceFree": "Ingen avgift",
+    "pricePerMonth": "{price} per månad",
+    "downgradeNote": "Om du nedgraderar finns dina inställningar, regler och din verifieringshistorik kvar.",
+    "includedIn": "Ingår i {plan}.",
+    "monthlyResets": "Månadsräkningen börjar om den 1:a nästa månad.",
+    "limitMonthlyVerificationsHeading": "Din plan omfattar {limit} verifieringar per månad",
+    "limitMonthlyVerificationsBody": "Kunderna har genomfört {used, plural, one {# verifiering} other {# verifieringar}} denna månad."
+  },
+  "planFeatures": {
+    "verifications50": "50 åldersverifieringar per månad",
+    "verifications1000": "1 000 åldersverifieringar per månad",
+    "verifications5000": "5 000 åldersverifieringar per månad",
+    "allCountries": "MitID, BankID (SE/NO) och Finnish Trust Network",
+    "prioritySupport": "Prioriterad support",
+    "trial7": "7 dagars gratis provperiod"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "dashboard": "Oversigt",
+    "plans": "Abonnementer"
+  },
+  "common": {
+    "loading": "Indlæser",
+    "retry": "Prøv igen",
+    "save": "Gem",
+    "discard": "Kassér",
+    "saved": "Gemt",
+    "errorHeading": "Noget gik galt",
+    "errorBody": "Tjek din forbindelse, og prøv igen.",
+    "notFoundHeading": "Siden blev ikke fundet",
+    "notFoundBody": "Denne side findes ikke.",
+    "goHome": "Gå til oversigten"
+  },
+  "dashboard": {
+    "heading": "Oversigt"
+  },
+  "theme": {
+    "heading": "Aldersbekræftelse i din butik",
+    "loadError": "Dit tema kunne ikke kontrolleres",
+    "liveTheme": "Publiceret tema: {theme}",
+    "ageGate": "App-indlejringen Aldersbekræftelse",
+    "enabled": "Slået til",
+    "notEnabled": "Ikke slået til",
+    "enabledBody": "Aldersbegrænsede produkter beder kunderne om at bekræfte deres alder, før de kan købe.",
+    "notEnabledBody": "Slå Aldersbekræftelse til under App-indlejringer i dit tema, og gem temaet. Indtil da kan kunderne købe aldersbegrænsede produkter uden at bekræfte deres alder.",
+    "enable": "Slå til i temaeditoren",
+    "recheck": "Kontrollér igen"
+  },
+  "plans": {
+    "heading": "Abonnementer",
+    "nameFree": "Free",
+    "nameStarter": "Starter",
+    "namePro": "Pro",
+    "changePlan": "Skift abonnement",
+    "comparePlans": "Sammenlign abonnementer",
+    "openFailed": "Abonnementssiden kunne ikke åbnes. Prøv igen.",
+    "currentHeading": "Dit abonnement",
+    "trialBadge": "Gratis prøveperiode",
+    "trialEnds": "Den gratis prøveperiode slutter {date}.",
+    "periodEnds": "Den aktuelle faktureringsperiode slutter {date}.",
+    "changeHelp": "Opgrader eller nedgrader når som helst på Shopifys abonnementsside. Betalingen vises på din Shopify-regning.",
+    "syncFailed": "Shopify kunne ikke nås, så her vises dit abonnement pr. {date}. Åbn siden igen senere.",
+    "compareHeading": "Abonnementer",
+    "currentBadge": "Nuværende abonnement",
+    "priceFree": "Gratis",
+    "pricePerMonth": "{price} pr. måned",
+    "downgradeNote": "Hvis du nedgraderer, beholder du dine indstillinger, regler og din bekræftelseshistorik.",
+    "includedIn": "Indgår i {plan}.",
+    "monthlyResets": "Den månedlige optælling starter forfra den 1. i næste måned.",
+    "limitMonthlyVerificationsHeading": "Dit abonnement omfatter {limit} bekræftelser pr. måned",
+    "limitMonthlyVerificationsBody": "Kunderne har gennemført {used, plural, one {# bekræftelse} other {# bekræftelser}} i denne måned."
+  },
+  "planFeatures": {
+    "verifications50": "50 aldersbekræftelser pr. måned",
+    "verifications1000": "1.000 aldersbekræftelser pr. måned",
+    "verifications5000": "5.000 aldersbekræftelser pr. måned",
+    "allCountries": "MitID, BankID (SE/NO) og Finnish Trust Network",
+    "prioritySupport": "Prioriteret support",
+    "trial7": "7 dages gratis prøveperiode"
+  }
+}

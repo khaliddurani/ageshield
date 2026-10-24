@@ -1,0 +1,55 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ageshield",
+  "main": "worker/src/index.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "assets": {
+    "directory": "./web/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": true          // Worker must add CSP headers + handle non-embedded redirects
+  },
+  "triggers": { "crons": ["0 3 * * *"] },
+
+  "env": {
+    "staging": {
+      "name": "ageshield-staging",
+      "workers_dev": true,
+      "preview_urls": false,
+      "vars": {
+        "APP_URL": "https://ageshield-staging.km-durani.workers.dev",
+        "SHOPIFY_APP_HANDLE": "ageshield-staging",   // set to the staging app's handle once it is created
+        "SHOPIFY_API_VERSION": "2026-10",
+        "APP_PROXY_SUBPATH": "ageshield-staging"     // must match [app_proxy] subpath in shopify.app.staging.toml
+      },
+      // database_id: from `wrangler d1 create ageshield-db-staging` (docs/DEPLOY_CLOUDFLARE.md §1)
+      "d1_databases": [{ "binding": "DB", "database_name": "ageshield-db-staging", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "worker/migrations" }],
+      "queues": {
+        "producers": [{ "binding": "JOBS", "queue": "ageshield-jobs-staging" }],
+        "consumers": [{ "queue": "ageshield-jobs-staging", "max_batch_size": 10, "max_retries": 5, "dead_letter_queue": "ageshield-dlq-staging" }]
+      }
+    },
+    "production": {
+      "name": "ageshield",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [{ "pattern": "ageshield.merchantkits.com", "custom_domain": true }],
+      "vars": {
+        "APP_URL": "https://ageshield.merchantkits.com",
+        "SHOPIFY_APP_HANDLE": "ageshield",           // set to the production app's handle once it is created
+        "SHOPIFY_API_VERSION": "2026-10",
+        "APP_PROXY_SUBPATH": "ageshield"             // must match [app_proxy] subpath in shopify.app.toml
+      },
+      // database_id: from `wrangler d1 create ageshield-db --jurisdiction eu` (EU location can only be set at creation)
+      "d1_databases": [{ "binding": "DB", "database_name": "ageshield-db", "database_id": "00000000-0000-0000-0000-000000000000", "migrations_dir": "worker/migrations" }],
+      "queues": {
+        "producers": [{ "binding": "JOBS", "queue": "ageshield-jobs" }],
+        "consumers": [{ "queue": "ageshield-jobs", "max_batch_size": 10, "max_retries": 5, "dead_letter_queue": "ageshield-dlq" }]
+      }
+    }
+  }
+  // Secrets (wrangler secret put): SHOPIFY_API_KEY, SHOPIFY_API_SECRET, TOKEN_ENCRYPTION_KEY,
+  // IDURA_DOMAIN, IDURA_CLIENT_ID, IDURA_CLIENT_SECRET, VERIFICATION_SIGNING_KEY
+}

@@ -1,0 +1,39 @@
+{
+  "name": "ageshield",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "worker",
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run build --workspace web && wrangler dev --env staging",
+    "dev:web": "npm run dev --workspace web",
+    "build": "npm run build --workspace web",
+    "typecheck": "tsc -p worker --noEmit && tsc -p worker/test --noEmit && tsc -p web --noEmit",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "deploy:staging": "npm run build && wrangler deploy --env staging",
+    "deploy:prod": "npm run build && wrangler deploy --env production",
+    "db:migrate:staging": "wrangler d1 migrations apply ageshield-db-staging --env staging --remote",
+    "db:migrate:prod": "wrangler d1 migrations apply ageshield-db --env production --remote"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.5",
+    "@types/sql.js": "^1.4.11",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "jsdom": "^28.1.0",
+    "prettier": "^3.9.9",
+    "sql.js": "^1.14.2",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3",
+    "wrangler": "^4.149.0"
+  }
+}

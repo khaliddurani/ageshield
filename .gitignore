@@ -1,0 +1,9 @@
+node_modules/
+dist/
+web/dist/
+.wrangler/
+.dev.vars
+.env*
+!.env.example
+*.log
+.shopify/

@@ -1,0 +1,52 @@
+# Staging app config (separate app in Dev Dashboard). Verify keys against current Shopify CLI docs before first deploy.
+client_id = "REPLACE_WITH_STAGING_CLIENT_ID"   # Dev Dashboard → AgeShield Staging → Client ID
+name = "AgeShield Staging"
+handle = "ageshield-staging"                   # set by Shopify when the app is created; keep wrangler SHOPIFY_APP_HANDLE in sync
+application_url = "https://ageshield-staging.km-durani.workers.dev"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = false
+
+[access_scopes]
+# Same scopes as production (see shopify.app.toml) — keep both files in sync.
+scopes = "read_products,write_products,read_themes"
+use_legacy_install_flow = false          # MANDATORY — SignShield lesson (req. 2.3.2)
+
+[auth]
+redirect_urls = [ "https://ageshield-staging.km-durani.workers.dev/auth/callback" ]   # required field; managed install does not use it
+
+[webhooks]
+api_version = "2026-10"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "products/create", "products/update" ]
+  uri = "/webhooks/products"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = [ "customers/data_request", "customers/redact", "shop/redact" ]
+  uri = "/webhooks/compliance"
+
+[app_proxy]
+url = "https://ageshield-staging.km-durani.workers.dev/proxy"
+prefix = "apps"
+subpath = "ageshield-staging"
+
+[pos]
+embedded = false
+
+# App-owned product metafield ($app.age_restricted). Keep in sync with shopify.app.toml.
+[product.metafields.app.age_restricted]
+type = "number_integer"
+name = "Age restriction"
+description = "Minimum age to buy this product. Set by AgeShield from your restricted-product rules."
+access.admin = "merchant_read"
+access.storefront = "public_read"

@@ -1,0 +1,10 @@
+node_modules/
+**/dist/
+.wrangler/
+.shopify/
+package-lock.json
+docs/
+extensions/
+worker/migrations/
+*.md
+wrangler.jsonc
