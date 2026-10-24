@@ -17,6 +17,9 @@ CREATE TABLE shops (
   plan_synced_at            INTEGER,                   -- last successful plan sync
   shop_name                 TEXT,
   iana_timezone             TEXT,                      -- Shopify shop.ianaTimezone; admin UI dates
+  storefront_domains        TEXT,                      -- JSON {primary, hosts[]}: primary + market domains (services/shop-domains.ts)
+  storefront_domains_at     INTEGER,                   -- when storefront_domains was fetched
+  storefront_config_hash    TEXT,                      -- sha256 of the config last written to the app-data metafield
   installed_at              INTEGER NOT NULL,
   uninstalled_at            INTEGER
 );

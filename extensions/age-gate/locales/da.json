@@ -1,0 +1,23 @@
+{
+  "age_gate": {
+    "heading": "Aldersbekræftelse påkrævet",
+    "body": "Du skal være {age}+ for at købe dette produkt. Bekræft din alder med dit nationale eID — vi får kun at vide, om du er gammel nok.",
+    "body_checkout": "Dette produkt er kun for {age}+. Du bekræfter din alder med dit nationale eID før betaling.",
+    "body_cart": "Din kurv indeholder produkter kun for {age}+. Bekræft din alder med dit nationale eID for at gå til betaling.",
+    "verify_with": "Bekræft din alder med",
+    "method_dk": "MitID",
+    "method_se": "BankID (Sverige)",
+    "method_no": "BankID (Norge)",
+    "method_fi": "Finsk bank-ID",
+    "opening": "Åbner eID-login…",
+    "verified": "Alder bekræftet ✓",
+    "rejected": "Du skal være {age}+ for at købe dette produkt",
+    "cancelled": "Bekræftelsen blev annulleret, prøv igen",
+    "assurance_mitid": "Dit MitID har ikke det krævede sikringsniveau",
+    "assurance": "Dit eID har ikke det krævede sikringsniveau",
+    "expired": "Bekræftelsen tog for lang tid. Prøv igen.",
+    "error": "Bekræftelsen lykkedes ikke. Prøv igen.",
+    "rate_limited": "For mange forsøg. Vent et par minutter, og prøv igen.",
+    "buy_now_hidden": "Læg produktet i kurven for at købe det — hurtig betaling er ikke tilgængelig for aldersbegrænsede produkter."
+  }
+}

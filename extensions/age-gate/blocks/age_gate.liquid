@@ -1,0 +1,65 @@
+{%- comment -%}
+  AgeShield age gate (app embed). Renders only where an age check is needed: a product with the app-owned metafield
+  $app.age_restricted, or a cart that contains one. Everything else happens in assets/age-gate.js.
+  - Config (countries, texts, colour, gate mode, App Proxy path) comes from the app-data metafield
+    app.metafields.ageshield.config, written by the app as script-safe JSON (never calls the app from page views).
+  - UX only: the Phase 2 checkout Function is the real enforcement.
+{%- endcomment -%}
+{%- liquid
+  assign product_age = nil
+  if template.name == 'product' and product
+    assign product_age = product.metafields['$app'].age_restricted.value
+  endif
+  assign cart_age = 0
+  for item in cart.items
+    assign item_age = item.product.metafields['$app'].age_restricted.value | default: 0
+    if item_age > cart_age
+      assign cart_age = item_age
+    endif
+  endfor
+  assign config = app.metafields.ageshield.config.value
+-%}
+{%- if product_age or cart_age > 0 -%}
+  <script type="application/json" id="ageshield-data">
+    {
+      "config": {% if config != blank %}{{ config }}{% else %}null{% endif %},
+      "productAge": {% if product_age %}{{ product_age | json }}{% else %}null{% endif %},
+      "cartAge": {{ cart_age | json }},
+      "template": {{ template.name | json }},
+      "token": {{ cart.attributes['_ageshield_token'] | default: '' | json }},
+      "locale": {{ request.locale.iso_code | json }},
+      "root": {{ routes.root_url | json }},
+      "i18n": {
+        "heading": {{ 'age_gate.heading' | t | json }},
+        "body": {{ 'age_gate.body' | t | json }},
+        "body_checkout": {{ 'age_gate.body_checkout' | t | json }},
+        "body_cart": {{ 'age_gate.body_cart' | t | json }},
+        "verify_with": {{ 'age_gate.verify_with' | t | json }},
+        "method_dk": {{ 'age_gate.method_dk' | t | json }},
+        "method_se": {{ 'age_gate.method_se' | t | json }},
+        "method_no": {{ 'age_gate.method_no' | t | json }},
+        "method_fi": {{ 'age_gate.method_fi' | t | json }},
+        "opening": {{ 'age_gate.opening' | t | json }},
+        "verified": {{ 'age_gate.verified' | t | json }},
+        "rejected": {{ 'age_gate.rejected' | t | json }},
+        "cancelled": {{ 'age_gate.cancelled' | t | json }},
+        "assurance_mitid": {{ 'age_gate.assurance_mitid' | t | json }},
+        "assurance": {{ 'age_gate.assurance' | t | json }},
+        "expired": {{ 'age_gate.expired' | t | json }},
+        "error": {{ 'age_gate.error' | t | json }},
+        "rate_limited": {{ 'age_gate.rate_limited' | t | json }},
+        "buy_now_hidden": {{ 'age_gate.buy_now_hidden' | t | json }}
+      }
+    }
+  </script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Age gate",
+  "target": "body",
+  "javascript": "age-gate.js",
+  "stylesheet": "age-gate.css",
+  "settings": []
+}
+{% endschema %}

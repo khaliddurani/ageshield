@@ -4,18 +4,24 @@ import { adminClientForShop } from '../../lib/shopify/admin';
 import { syncPlanIfStale } from '../../services/billing';
 import { getShopProfile } from '../../services/shops';
 import { appEmbedStatus } from '../../services/theme-status';
+import { syncStorefrontConfig } from '../../services/storefront-config';
 
 export const meRoutes = new Hono<AppBindings>()
   .get('/me', async (c) => {
     const profile = await getShopProfile(c.env, c.get('shop'), c.get('idToken'));
     if (!profile) return c.json({ error: 'shop_not_found' }, 404);
-    // Keep shops.plan in sync with Shopify App Pricing (background; only when the last sync is > 5 min old).
-    const sync = syncPlanIfStale(
-      c.env.DB,
-      adminClientForShop(c.env, c.get('shop'), c.get('idToken')),
-      c.get('shop'),
-      Date.now(),
-    );
+    const shop = c.get('shop');
+    const admin = adminClientForShop(c.env, shop, c.get('idToken'));
+    // Background: keep shops.plan in sync with Shopify App Pricing (only when the last sync is > 5 min old), and
+    // (re)publish the storefront config if it changed or was lost (reinstall).
+    const sync = Promise.all([
+      syncPlanIfStale(c.env.DB, admin, shop, Date.now()),
+      syncStorefrontConfig(c.env, admin, shop).catch((err: unknown) => {
+        console.error(
+          `storefront config for ${shop} not published: ${err instanceof Error ? `${err.name}: ${err.message}` : 'error'}`,
+        );
+      }),
+    ]);
     try {
       c.executionCtx.waitUntil(sync);
     } catch {

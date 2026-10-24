@@ -86,9 +86,11 @@ export async function markShopUninstalled(db: D1Database, shop: string, now: num
   await db.batch([
     db
       .prepare(
+        // Shopify deletes the app-data config metafield on uninstall: forget its hash so a reinstall writes it again.
         `UPDATE shops SET uninstalled_at = ?1,
                 access_token_enc = NULL, access_token_expires_at = NULL,
-                refresh_token_enc = NULL, refresh_token_expires_at = NULL, refreshing_until = NULL
+                refresh_token_enc = NULL, refresh_token_expires_at = NULL, refreshing_until = NULL,
+                storefront_config_hash = NULL
           WHERE shop = ?2`,
       )
       .bind(now, shop),

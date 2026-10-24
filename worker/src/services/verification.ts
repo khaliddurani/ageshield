@@ -13,7 +13,9 @@ import {
   type IduraDeps,
 } from '../lib/idura';
 import { countrySchema, getSettings, minAgeSchema, type Country, type MinAge } from './settings';
+import { adminClientForShop, type AdminClient } from '../lib/shopify/admin';
 import { hitRateLimit, type RateLimitRule } from './rate-limit';
+import { returnHostFor } from './shop-domains';
 import { signVerificationToken, TOKEN_TTL_S, TOKEN_VERSION } from './verification-token';
 
 // Age verification flow (ARCHITECTURE §6):
@@ -32,6 +34,11 @@ export const startRequestSchema = z.object({
   minAge: minAgeSchema,
   /** Store-relative path to come back to, e.g. "/products/snus?variant=1". */
   returnPath: z.string().min(1).max(1024),
+  /**
+   * The shopper's current host (location.hostname). Untrusted: used only if it is one of the shop's own domains
+   * (services/shop-domains.ts), otherwise the primary domain is used.
+   */
+  host: z.string().max(253).optional(),
 });
 
 export class VerificationError extends Error {
@@ -46,20 +53,32 @@ export class VerificationError extends Error {
 }
 
 /**
- * The absolute return URL on the store: https://{signed shop domain}{path}. Only a relative path is accepted (no
- * scheme, no "//host", no backslashes or control characters); any fragment is dropped (it would clash with ours).
- * The myshopify domain redirects to the store's primary domain and browsers keep the fragment across that redirect.
+ * A store-relative path: no scheme, no "//host", no backslashes or control characters. Any fragment is dropped (it
+ * would clash with ours).
  */
-export function returnUrlFor(shop: string, returnPath: string): string {
+export function safeReturnPath(returnPath: string): string {
   const path = returnPath.split('#')[0] ?? '';
   // eslint-disable-next-line no-control-regex
   if (!/^\/(?![/\\])[^\\\u0000-\u001f\u007f]*$/.test(path)) {
     throw new VerificationError('invalid_return_path', 400);
   }
-  const base = `https://${shop}`;
-  const url = new URL(path, base);
+  return path;
+}
+
+/**
+ * The absolute return URL https://{host}{path}. `host` must already be one of the shop's own domains (signed shop
+ * domain, or a host checked by returnHostFor) — never a client value as-is.
+ */
+export function returnUrlFor(host: string, returnPath: string): string {
+  const base = `https://${host}`;
+  const url = new URL(safeReturnPath(returnPath), base);
   if (url.origin !== base) throw new VerificationError('invalid_return_path', 400);
   return url.toString();
+}
+
+export interface StartDeps extends IduraDeps {
+  /** Admin client of the shop (stored offline token); for the storefront domain lookup. */
+  admin?: () => AdminClient;
 }
 
 export function iduraConfig(env: Env): IduraConfig {
@@ -78,9 +97,9 @@ export async function startVerification(
   input: z.infer<typeof startRequestSchema>,
   clientIp: string,
   now: number,
-  deps: IduraDeps = {},
+  deps: StartDeps = {},
 ): Promise<{ authorizeUrl: string }> {
-  const returnUrl = returnUrlFor(shop, input.returnPath);
+  safeReturnPath(input.returnPath); // reject bad paths before anything is counted or looked up
   const limit = await hitRateLimit(env.DB, START_RATE_LIMIT, clientIp, now);
   if (!limit.allowed) throw new VerificationError('rate_limited', 429, limit.retryAfterS);
 
@@ -94,6 +113,14 @@ export async function startVerification(
   if (!settings.enabledCountries.includes(input.country))
     throw new VerificationError('country_not_enabled', 403);
 
+  const host = await returnHostFor(
+    env.DB,
+    deps.admin ?? (() => adminClientForShop(env, shop)),
+    shop,
+    input.host,
+    now,
+  );
+  const returnUrl = returnUrlFor(host, input.returnPath);
   const config = iduraConfig(env);
   const discovery = await getDiscovery(config.domain, deps);
   const state = randomToken();
@@ -191,7 +218,12 @@ export async function completeVerification(
   const back = (status: StorefrontStatus) =>
     ({
       kind: 'redirect',
-      url: withFragment(row.return_url, { ageshield_status: status, ageshield_age: String(row.min_age) }),
+      url: withFragment(row.return_url, {
+        ageshield_status: status,
+        ageshield_age: String(row.min_age),
+        // Lets the storefront name the eID in messages (e.g. MitID for the assurance-level error).
+        ageshield_country: row.country,
+      }),
     }) as const;
 
   if (row.expires_at < now) {

@@ -18,6 +18,12 @@ export class FakeShopify {
   collections = new Set<string>();
   /** Page size of connection queries (small values exercise cursors). */
   pageSize = 250;
+  /** shop.primaryDomain.host */
+  primaryDomain = 'snusbutik.dk';
+  /** Web presences: a domain host, or null for a subfolder presence (/en-us). */
+  webPresences: (string | null)[] = ['snusbutik.dk', 'snusbutik.se', 'snusbutik.no', null];
+  /** false = the app has no read_markets yet (webPresences is access denied). */
+  readMarkets = true;
   /** config/settings_data.json of the main theme (null = file missing). */
   settingsData: string | null = null;
   themeName = 'Dawn';
@@ -77,6 +83,40 @@ export class FakeShopify {
             ],
           },
         };
+      case 'AgeShieldStorefrontDomains': {
+        if (!this.readMarkets)
+          throw new AccessDeniedError(
+            'Access denied for webPresences field. Required access: `read_markets`',
+          );
+        const start = typeof v['after'] === 'string' ? Number(v['after']) : 0;
+        const end = start + this.pageSize;
+        return {
+          shop: { primaryDomain: { host: this.primaryDomain } },
+          webPresences: {
+            nodes: this.webPresences.slice(start, end).map((host) => ({ domain: host ? { host } : null })),
+            pageInfo: {
+              hasNextPage: end < this.webPresences.length,
+              endCursor: end < this.webPresences.length ? String(end) : null,
+            },
+          },
+        };
+      }
+      case 'AgeShieldAppInstallation':
+        return { currentAppInstallation: { id: 'gid://shopify/AppInstallation/1' } };
+      case 'AgeShieldConfigSet': {
+        for (const m of v['metafields'] as {
+          ownerId: string;
+          namespace: string;
+          key: string;
+          type: string;
+          value: string;
+        }[]) {
+          this.metafields.set(`${m.ownerId}|${m.namespace}.${m.key}`, { type: m.type, value: m.value });
+        }
+        return { metafieldsSet: { metafields: [], userErrors: [] } };
+      }
+      case 'AgeShieldPrimaryDomain':
+        return { shop: { primaryDomain: { host: this.primaryDomain } } };
       case 'AgeShieldCollectionProducts': {
         const id = v['id'] as string;
         if (!this.collections.has(id)) return { collection: null };

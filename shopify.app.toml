@@ -13,7 +13,8 @@ automatically_update_urls_on_dev = false
 # read_products: expand collection/tag rules to products and read product tags for the age-restriction sync.
 # write_products: set/remove the app-owned product metafield $app.age_restricted (no other product data is written).
 # read_themes: show on the Dashboard whether the Age gate app embed is enabled in the live theme.
-scopes = "read_products,write_products,read_themes"
+# read_markets: read the store's market domains (webPresences) so shoppers return to the domain they shop on.
+scopes = "read_products,write_products,read_themes,read_markets"
 use_legacy_install_flow = false          # MANDATORY — SignShield lesson (req. 2.3.2)
 
 [auth]

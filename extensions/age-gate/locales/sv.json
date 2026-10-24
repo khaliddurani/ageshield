@@ -1,0 +1,23 @@
+{
+  "age_gate": {
+    "heading": "Åldersverifiering krävs",
+    "body": "Du måste vara {age}+ för att köpa den här produkten. Verifiera din ålder med din nationella e-legitimation — vi får bara veta om du är gammal nog.",
+    "body_checkout": "Den här produkten är endast för {age}+. Du verifierar din ålder med din nationella e-legitimation före kassan.",
+    "body_cart": "Din varukorg innehåller produkter endast för {age}+. Verifiera din ålder med din nationella e-legitimation för att gå till kassan.",
+    "verify_with": "Verifiera din ålder med",
+    "method_dk": "MitID",
+    "method_se": "BankID (Sverige)",
+    "method_no": "BankID (Norge)",
+    "method_fi": "Finskt bank-id",
+    "opening": "Öppnar e-legitimationen…",
+    "verified": "Ålder verifierad ✓",
+    "rejected": "Du måste vara {age}+ för att köpa den här produkten",
+    "cancelled": "Verifieringen avbröts, försök igen",
+    "assurance_mitid": "Ditt MitID har inte den säkerhetsnivå som krävs",
+    "assurance": "Din e-legitimation har inte den säkerhetsnivå som krävs",
+    "expired": "Verifieringen tog för lång tid. Försök igen.",
+    "error": "Verifieringen fungerade inte. Försök igen.",
+    "rate_limited": "För många försök. Vänta några minuter och försök igen.",
+    "buy_now_hidden": "Lägg produkten i varukorgen för att köpa den — snabbkassa är inte tillgänglig för åldersbegränsade produkter."
+  }
+}

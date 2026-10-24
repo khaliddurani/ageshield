@@ -7,6 +7,7 @@ import { completeVerification, START_RATE_LIMIT, STATE_TTL_MS } from '../src/ser
 import { verifyVerificationToken } from '../src/services/verification-token';
 import { createTestD1, type TestD1 } from './d1';
 import { FakeIdura, ISSUER } from './fake-idura';
+import { FakeShopify } from './fake-shopify';
 import {
   APP_URL,
   IDURA_CLIENT_ID,
@@ -18,6 +19,13 @@ import {
 } from './helpers';
 import { signedQuery } from './signing';
 
+// /verify/start looks up the shop's storefront domains with the shop's Admin client; the route gets a fake.
+let shopify = new FakeShopify();
+vi.mock('../src/lib/shopify/admin', async (original) => ({
+  ...(await original<typeof import('../src/lib/shopify/admin')>()),
+  adminClientForShop: () => shopify.admin,
+}));
+
 let d1: TestD1;
 let idura: FakeIdura;
 let env: Env;
@@ -27,6 +35,7 @@ beforeEach(async () => {
   d1 = await createTestD1();
   seedShop(d1.raw);
   idura = await FakeIdura.create();
+  shopify = new FakeShopify();
   env = makeEnv({ DB: d1.db });
   vi.stubGlobal('fetch', idura.fetch); // the routes use the global fetch (and jose's JWKS fetch)
 });
@@ -62,7 +71,7 @@ const verifications = () =>
 
 /** Starts a login through the proxy and returns its state row (nonce wired into the fake tenant). */
 async function begin(country = 'DK', minAge = 18, returnPath = '/products/snus?variant=1') {
-  const res = await start({ country, minAge, returnPath });
+  const res = await start({ country, minAge, returnPath, host: SHOP });
   expect(res.status).toBe(200);
   const row = stateRow();
   idura.nonce = row.nonce;
@@ -100,12 +109,30 @@ describe('POST /proxy/verify/start', () => {
       code_challenge_method: 'S256',
     });
     expect(authorizeUrl).not.toContain(row.code_verifier);
-    // The return URL is built from the signed shop only; the client's fragment is dropped.
-    expect(row.return_url).toBe(`https://${SHOP}/products/snus?variant=1`);
+    // No host sent: the shop's primary domain; the client's fragment is dropped.
+    expect(row.return_url).toBe('https://snusbutik.dk/products/snus?variant=1');
     expect(
       row.expires_at -
         Number(d1.query<{ created_at: number }>('SELECT created_at FROM oidc_states')[0]?.created_at),
     ).toBe(STATE_TTL_MS);
+  });
+
+  it('returns the shopper to their own market domain, never to a foreign or look-alike host', async () => {
+    const cases: [string, string][] = [
+      ['snusbutik.se', 'https://snusbutik.se/products/x'],
+      ['snusbutik.no', 'https://snusbutik.no/products/x'],
+      [SHOP, `https://${SHOP}/products/x`],
+      ['evil.com', 'https://snusbutik.dk/products/x'],
+      ['snusbutik.se.evil.com', 'https://snusbutik.dk/products/x'],
+      ['evil-snusbutik.se', 'https://snusbutik.dk/products/x'],
+    ];
+    for (const [host, expected] of cases) {
+      d1.raw.run('DELETE FROM oidc_states');
+      const res = await start({ country: 'DK', minAge: 18, returnPath: '/products/x', host });
+      expect(res.status, host).toBe(200);
+      expect(stateRow().return_url, host).toBe(expected);
+    }
+    expect(shopify.opCount('AgeShieldStorefrontDomains')).toBe(1); // cached on the shops row
   });
 
   it('accepts only store-relative return paths', async () => {
@@ -231,7 +258,11 @@ describe('GET /oidc/callback', () => {
     idura.claims = { [AGE_CLAIM]: { country: 'DK', auditId: 'alu_minor', is_over_18: false } };
     const outcome = await callback({ code: 'c', state: row.state });
     const fragment = fragmentOf(outcome.kind === 'redirect' ? outcome.url : 'https://x');
-    expect(Object.fromEntries(fragment)).toEqual({ ageshield_status: 'rejected', ageshield_age: '18' });
+    expect(Object.fromEntries(fragment)).toEqual({
+      ageshield_status: 'rejected',
+      ageshield_age: '18',
+      ageshield_country: 'DK',
+    });
     expect(verifications()[0]).toMatchObject({
       result: 'rejected',
       audit_id: 'alu_minor',

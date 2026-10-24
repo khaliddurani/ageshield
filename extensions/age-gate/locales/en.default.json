@@ -1,0 +1,23 @@
+{
+  "age_gate": {
+    "heading": "Age verification required",
+    "body": "You must be {age}+ to buy this product. Verify your age with your national eID — we only receive whether you are old enough.",
+    "body_checkout": "This product is for {age}+ only. You'll verify your age with your national eID before checkout.",
+    "body_cart": "Your cart contains products for {age}+ only. Verify your age with your national eID to check out.",
+    "verify_with": "Verify your age with",
+    "method_dk": "MitID",
+    "method_se": "BankID (Sweden)",
+    "method_no": "BankID (Norway)",
+    "method_fi": "Finnish bank ID",
+    "opening": "Opening the eID login…",
+    "verified": "Age verified ✓",
+    "rejected": "You must be {age}+ to buy this product",
+    "cancelled": "Verification cancelled, try again",
+    "assurance_mitid": "Your MitID doesn't have the required security level",
+    "assurance": "Your eID doesn't have the required security level",
+    "expired": "The verification took too long. Please try again.",
+    "error": "The verification didn't work. Please try again.",
+    "rate_limited": "Too many attempts. Please wait a few minutes and try again.",
+    "buy_now_hidden": "Add the product to your cart to buy it — express checkout isn't available for age-restricted products."
+  }
+}

@@ -10,7 +10,7 @@ automatically_update_urls_on_dev = false
 
 [access_scopes]
 # Same scopes as production (see shopify.app.toml) — keep both files in sync.
-scopes = "read_products,write_products,read_themes"
+scopes = "read_products,write_products,read_themes,read_markets"
 use_legacy_install_flow = false          # MANDATORY — SignShield lesson (req. 2.3.2)
 
 [auth]

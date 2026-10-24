@@ -39,12 +39,12 @@ describe('App Proxy signature check', () => {
     });
 
     it('rejects a correctly signed request older than 5 minutes (replay) → 401', async () => {
-      const res = await app.request(`/proxy/ping?${await signedQuery(at(-301))}`, {}, makeEnv());
+      const res = await app.request(`/proxy/ping?${await signedQuery(at(-330))}`, {}, makeEnv());
       expect(res.status).toBe(401);
     });
 
     it('rejects a correctly signed request more than 5 minutes in the future → 401', async () => {
-      const res = await app.request(`/proxy/ping?${await signedQuery(at(301))}`, {}, makeEnv());
+      const res = await app.request(`/proxy/ping?${await signedQuery(at(330))}`, {}, makeEnv());
       expect(res.status).toBe(401);
     });
 

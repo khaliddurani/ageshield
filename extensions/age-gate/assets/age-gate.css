@@ -1,0 +1,84 @@
+/* AgeShield age gate. Sizes in em so they follow the theme's text (Dawn sets the root font size to 62.5%: rem-based
+   text would render at ~9px). Never use rem here; worker/test/storefront.test.ts checks it. */
+.ageshield {
+  --ageshield-color: #1a1a1a;
+  font-size: inherit;
+  line-height: 1.4;
+  margin: 0 0 1em;
+  padding: 0.9em 1em;
+  border: 0.0625em solid rgba(0, 0, 0, 0.15);
+  border-left: 0.25em solid var(--ageshield-color);
+  border-radius: 0.375em;
+  background: rgba(0, 0, 0, 0.02);
+}
+.ageshield:focus {
+  outline: 0.125em solid var(--ageshield-color);
+  outline-offset: 0.125em;
+}
+.ageshield p {
+  margin: 0 0 0.5em;
+  font-size: inherit;
+}
+.ageshield__heading {
+  font-weight: 600;
+}
+.ageshield__label {
+  margin-top: 0.75em;
+}
+.ageshield__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+.ageshield__button {
+  font: inherit;
+  cursor: pointer;
+  min-height: 2.75em;
+  padding: 0.5em 1.1em;
+  border: 0.0625em solid var(--ageshield-color);
+  border-radius: 0.375em;
+  background: var(--ageshield-color);
+  color: #fff;
+}
+.ageshield__button:hover {
+  opacity: 0.9;
+}
+.ageshield__button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+.ageshield__button:focus-visible {
+  outline: 0.125em solid var(--ageshield-color);
+  outline-offset: 0.125em;
+}
+.ageshield__verified {
+  font-weight: 600;
+  color: #0a6b2d;
+}
+.ageshield--verified {
+  border-left-color: #0a6b2d;
+}
+.ageshield__note {
+  font-size: 0.875em;
+  opacity: 0.8;
+}
+.ageshield__message:empty {
+  display: none;
+}
+.ageshield__message--rejected,
+.ageshield__message--cancelled,
+.ageshield__message--assurance,
+.ageshield__message--expired,
+.ageshield__message--error,
+.ageshield__message--rate_limited {
+  font-weight: 600;
+  color: #8e1f0b;
+}
+.ageshield-blocked {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.ageshield-hidden {
+  display: none !important;
+}
