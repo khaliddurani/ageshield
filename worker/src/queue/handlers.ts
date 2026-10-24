@@ -9,7 +9,18 @@ import {
 } from '../lib/shopify/webhook-payloads';
 import { syncPlan } from '../services/billing';
 import { handleCustomersDataRequest, handleCustomersRedact, handleShopRedact } from '../services/compliance';
-import { nonRetryableFailure } from '../services/job-errors';
+import {
+  exhaustedFailure,
+  formatJobError,
+  nonRetryableFailure,
+  type JobFailure,
+} from '../services/job-errors';
+import {
+  failRulesSync,
+  rulesSyncPayloadSchema,
+  runRulesSyncStep,
+  syncProduct,
+} from '../services/restriction-sync';
 import { markShopUninstalled, updateShopScopes } from '../services/shops';
 
 /** Message shape for the JOBS queue. `payload` is validated with Zod per job type. */
@@ -42,6 +53,25 @@ function isPermanent(err: unknown): boolean {
   return err instanceof PermanentJobError || nonRetryableFailure(err) !== null;
 }
 
+/**
+ * Runs a user-visible job step. A non-retryable error fails it on the first attempt; any other error is retried until
+ * the last attempt. Either way `onGiveUp` records the failure (jobs.status = failed) so the UI never waits forever.
+ */
+async function withGiveUp(
+  attempt: number,
+  run: () => Promise<void>,
+  onGiveUp: (failure: JobFailure) => Promise<void>,
+) {
+  try {
+    await run();
+  } catch (err) {
+    const failure = nonRetryableFailure(err) ?? (attempt >= MAX_ATTEMPTS ? exhaustedFailure(err) : null);
+    if (!failure) throw err;
+    await onGiveUp(failure);
+    throw new PermanentJobError(formatJobError(failure));
+  }
+}
+
 export async function runJob(job: JobMessage, env: Env, deps: JobDeps = {}): Promise<void> {
   const clock = deps.now ?? Date.now;
   const now = clock();
@@ -54,9 +84,19 @@ export async function runJob(job: JobMessage, env: Env, deps: JobDeps = {}): Pro
       return updateShopScopes(env.DB, job.shop, appScopesUpdateSchema.parse(job.payload).current);
     case 'products/create':
     case 'products/update':
-      // Age-restriction sync for the changed product: added with the data model (step 2).
-      productJobSchema.parse(job.payload);
-      return;
+      return syncProduct(env.DB, admin, job.shop, productJobSchema.parse(job.payload), now);
+    case 'rules/sync': {
+      const payload = rulesSyncPayloadSchema.parse(job.payload);
+      return withGiveUp(
+        deps.attempt ?? 1,
+        async () => {
+          // Continue with a fresh message; progress (rule index + cursor) travels in the payload.
+          const next = await runRulesSyncStep(env.DB, admin(), job.shop, payload, clock());
+          if (next) await env.JOBS.send({ type: job.type, shop: job.shop, payload: next });
+        },
+        (failure) => failRulesSync(env.DB, payload.jobId, failure, clock()),
+      );
+    }
     case 'customers/data_request':
       return handleCustomersDataRequest(env.DB, job.shop, customersDataRequestSchema.parse(job.payload), now);
     case 'customers/redact':

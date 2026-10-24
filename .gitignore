@@ -7,3 +7,5 @@ web/dist/
 !.env.example
 *.log
 .shopify/
+# scripts/idura-test.ps1 state (PKCE verifier of a manual test login)
+.idura-test.json

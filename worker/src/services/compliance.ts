@@ -37,7 +37,17 @@ export async function handleCustomersRedact(
 }
 
 // Every table with a `shop` column. Children first.
-export const SHOP_TABLES = ['jobs', 'audit_log', 'webhook_events', 'shops'] as const;
+export const SHOP_TABLES = [
+  'oidc_states',
+  'verifications',
+  'restricted_products',
+  'restricted_rules',
+  'settings',
+  'jobs',
+  'audit_log',
+  'webhook_events',
+  'shops',
+] as const;
 
 /**
  * shop/redact: erase every row for the shop.

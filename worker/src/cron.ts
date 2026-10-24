@@ -12,6 +12,8 @@ export async function runDailyCron(env: Env, now: number): Promise<void> {
   const tasks: [string, () => Promise<unknown>][] = [
     ['plan_sync', () => queuePlanSyncs(env)],
     ['rate_limits', () => purgeRateLimits(env.DB, now, RATE_LIMIT_RETENTION_MS)],
+    // Logins that were started but never came back (the callback deletes the rows it uses).
+    ['oidc_states', () => env.DB.prepare('DELETE FROM oidc_states WHERE expires_at < ?1').bind(now).run()],
     [
       'webhook_events',
       () =>

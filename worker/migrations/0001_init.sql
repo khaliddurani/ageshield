@@ -25,7 +25,7 @@ CREATE TABLE jobs (                                      -- user-visible progres
   id            TEXT PRIMARY KEY,
   shop          TEXT NOT NULL REFERENCES shops(shop) ON DELETE CASCADE,
   type          TEXT NOT NULL,                          -- rules_sync
-  status        TEXT NOT NULL,                          -- queued | running | done | failed
+  status        TEXT NOT NULL,                          -- queued | running | done | failed | cancelled
   total         INTEGER NOT NULL DEFAULT 0,
   processed     INTEGER NOT NULL DEFAULT 0,
   error         TEXT,
