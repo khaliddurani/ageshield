@@ -57,6 +57,8 @@ CREATE TABLE verifications (
   country           TEXT NOT NULL CHECK (country IN ('DK', 'SE', 'NO', 'FI')),
   min_age           INTEGER NOT NULL CHECK (min_age IN (15, 16, 18, 21)),
   result            TEXT NOT NULL CHECK (result IN ('verified', 'rejected', 'cancelled', 'error')),
+  error_code        TEXT,                               -- result 'error' only: assurance_level, id_token_invalid, …
+  audit_id          TEXT,                               -- Idura audit reference (auditId claim); no personal data
   created_at        INTEGER NOT NULL,
   token_expires_at  INTEGER,                            -- verified only
   used_order_gid    TEXT,                               -- Phase 2: order the token was used for

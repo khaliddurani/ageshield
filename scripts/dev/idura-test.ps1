@@ -1,11 +1,11 @@
-# Manual Idura Age Verification test (Windows PowerShell 5.1 compatible). Dev tool only; not part of the app.
+# Manual Idura Age Verification test (Windows PowerShell 5.1 compatible). Dev tool only: never deployed (wrangler ships worker/ + web/dist only).
 #
 # 1. New login (prints the authorize URL and the PKCE code_verifier, saves verifier/state/nonce to .idura-test.json):
-#      .\scripts\idura-test.ps1 -New                          # DK, is_over_18
-#      .\scripts\idura-test.ps1 -New -Country SE -MinAge 18
+#      .\scripts\dev\idura-test.ps1 -New                          # DK, is_over_18
+#      .\scripts\dev\idura-test.ps1 -New -Country SE -MinAge 18
 # 2. Open the URL, log in. The browser lands on http://localhost:8787/oidc/callback?code=...&state=...
 #    (an error page is fine if nothing runs locally). Copy the full address bar URL, then within a minute or two:
-#      .\scripts\idura-test.ps1 -CallbackUrl 'http://localhost:8787/oidc/callback?code=...&state=...'
+#      .\scripts\dev\idura-test.ps1 -CallbackUrl 'http://localhost:8787/oidc/callback?code=...&state=...'
 #    It exchanges the code (client secret read from .dev.vars, never printed) and prints the id_token header and claims.
 #    Tokens themselves are never printed. The id_token signature is NOT verified here (the Worker does that with JWKS).
 [CmdletBinding(DefaultParameterSetName = 'New')]
@@ -17,7 +17,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-$root = Split-Path -Parent $PSScriptRoot
+$root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $stateFile = Join-Path $root '.idura-test.json'
 $redirectUri = 'http://localhost:8787/oidc/callback'
 
@@ -91,7 +91,7 @@ if ($PSCmdlet.ParameterSetName -eq 'New') {
   Write-Host "nonce:         $nonce"
   Write-Host ''
   Write-Host "Saved to $stateFile (git-ignored). After logging in, run:" -ForegroundColor Cyan
-  Write-Host "  .\scripts\idura-test.ps1 -CallbackUrl '<full callback URL from the address bar>'"
+  Write-Host "  .\scripts\dev\idura-test.ps1 -CallbackUrl '<full callback URL from the address bar>'"
   return
 }
 

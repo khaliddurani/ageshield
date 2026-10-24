@@ -9,6 +9,7 @@ import { meRoutes } from './routes/api/me';
 import { billingRoutes } from './routes/api/billing';
 import { proxyRoutes } from './routes/proxy';
 import { webhookRoutes } from './routes/webhooks';
+import { oidcRoutes } from './routes/oidc';
 import { TokenLockTimeoutError } from './lib/shopify/offline-token';
 import { redactPath } from './lib/redact';
 
@@ -21,6 +22,7 @@ app.route('/api', meRoutes);
 app.route('/api', billingRoutes);
 app.route('/webhooks', webhookRoutes);
 app.route('/proxy', proxyRoutes);
+app.route('/oidc', oidcRoutes);
 
 // SPA shell + static assets (must stay after API, webhook, proxy and OIDC routes).
 app.use('*', embeddedLoad);
