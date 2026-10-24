@@ -75,12 +75,12 @@ const toRule = (r: RuleRow): Rule => ({
   createdAt: r.created_at,
 });
 
-/** All rules of a shop, oldest first (the sync run walks them in this order). */
+/** All rules of a shop in insertion order (the sync run walks them by index, so the order must be stable). */
 export async function listRules(db: D1Database, shop: string): Promise<Rule[]> {
   const { results } = await db
     .prepare(
       `SELECT id, type, resource_gid, tag, min_age, created_at FROM restricted_rules
-        WHERE shop = ?1 ORDER BY created_at, id`,
+        WHERE shop = ?1 ORDER BY created_at, rowid`,
     )
     .bind(shop)
     .all<RuleRow>();

@@ -7,6 +7,10 @@ import { ZodError } from 'zod';
 import { runDailyCron } from './cron';
 import { meRoutes } from './routes/api/me';
 import { billingRoutes } from './routes/api/billing';
+import { settingsRoutes } from './routes/api/settings';
+import { rulesRoutes } from './routes/api/rules';
+import { verificationRoutes } from './routes/api/verifications';
+import { RuleError } from './services/rules';
 import { proxyRoutes } from './routes/proxy';
 import { webhookRoutes } from './routes/webhooks';
 import { oidcRoutes } from './routes/oidc';
@@ -20,6 +24,9 @@ app.get('/health', (c) => c.json({ ok: true }));
 app.use('/api/*', sessionAuth);
 app.route('/api', meRoutes);
 app.route('/api', billingRoutes);
+app.route('/api', settingsRoutes);
+app.route('/api', rulesRoutes);
+app.route('/api', verificationRoutes);
 app.route('/webhooks', webhookRoutes);
 app.route('/proxy', proxyRoutes);
 app.route('/oidc', oidcRoutes);
@@ -30,6 +37,7 @@ app.use('*', embeddedLoad);
 app.notFound((c) => c.json({ error: 'not_found' }, 404));
 
 app.onError((err, c) => {
+  if (err instanceof RuleError) return c.json({ error: err.code, message: err.message }, err.status);
   if (err instanceof ZodError) {
     return c.json(
       {

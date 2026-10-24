@@ -5,10 +5,11 @@ interface ResourcePickerVariant {
   title?: string;
 }
 
-interface ResourcePickerProduct {
+/** A selected product or collection (`variants` only for products). */
+interface ResourcePickerResource {
   id: string;
   title: string;
-  variants: ResourcePickerVariant[];
+  variants?: ResourcePickerVariant[];
 }
 
 interface ResourcePickerOptions {
@@ -23,7 +24,7 @@ declare global {
   const shopify: {
     idToken(): Promise<string>;
     /** Resolves to the selection, or undefined when the merchant cancels. */
-    resourcePicker(options: ResourcePickerOptions): Promise<ResourcePickerProduct[] | undefined>;
+    resourcePicker(options: ResourcePickerOptions): Promise<ResourcePickerResource[] | undefined>;
     saveBar: {
       show(id: string): Promise<void>;
       hide(id: string): Promise<void>;
@@ -35,4 +36,4 @@ declare global {
   };
 }
 
-export type { ResourcePickerProduct };
+export type { ResourcePickerResource };
